@@ -1,73 +1,80 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { Form } from './components/Form/Form';
 import { ContactList } from './components/ContactList/ContactList';
 import { Container } from './components/Container.styled';
 import { Input, Section } from './components/Form/FormElements.styled';
-// import { Container } from '';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-  onAddContact = data => {
-    if (this.state.contacts.some(({ name }) => data.name === name))
+export function App() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+
+  const onAddContact = data => {
+    if (contacts.some(({ name }) => data.name === name))
       return alert(`${data.name} is already in contacts`);
     const newContact = { ...data, id: nanoid() };
-    this.setState({ contacts: [...this.state.contacts, newContact] });
-  };
-  onDeleteContact = id => {
-    this.setState({
-      contacts: this.state.contacts.filter(contact => contact.id !== id),
-    });
+
+    setContacts([...contacts, newContact]);
   };
 
-  onChangeImput = event => {
-    this.setState({ filter: event.target.value.trim() });
+  const onDeleteContact = id => {
+    setContacts(contacts.filter(contact => contact.id !== id));
   };
-  componentDidMount() {
-    if (localStorage.getItem('contacts'))
-      this.setState({ contacts: JSON.parse(localStorage.getItem('contacts')) });
-    // const contacts = JSON.parse(localStorage.getItem('contacts'));
-    // if (contacts) {
-    //   this.setState({ contacts });
-    // }
-  }
-  componentDidUpdate(_, prevState) {
-    if (prevState.contact !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+
+  const onChangeImput = event => {
+    setFilter(event.target.value.trim());
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem('contacts')) {
+      setContacts(JSON.parse(localStorage.getItem('contacts')));
     }
-  }
-  componentWillUnmount() {
-    localStorage.removeItem('contacts');
-  }
-  render() {
-    const filteredContacts = this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
-    );
-    return (
-      <Container>
-        <Form onAddContact={this.onAddContact} />
-        <h2>Contacts</h2>
-        {this.state.contacts.length === 0 ? (
-          <p>No contacts</p>
-        ) : (
-          <Section>
-            <p>Find conacts by name</p>
-            <Input
-              type="text"
-              placeholder="Search contact"
-              value={this.state.filter}
-              onChange={this.onChangeImput}
-            ></Input>
-            <ContactList
-              contacts={filteredContacts}
-              onDeleteContact={this.onDeleteContact}
-            />
-          </Section>
-        )}
-      </Container>
-    );
-  }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+    return () => {
+      localStorage.removeItem('contacts');
+    };
+  }, [contacts]);
+
+  // componentDidUpdate(_, prevState) {
+  //   if (prevState.contact !== contacts) {
+  //     localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+  //   }
+  // };
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  // componentWillUnmount() {
+  //   localStorage.removeItem('contacts');
+  // }
+
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+  return (
+    <Container>
+      <Form onAddContact={onAddContact} />
+      <h2>Contacts</h2>
+      {contacts.length === 0 ? (
+        <p>No contacts</p>
+      ) : (
+        <Section>
+          <p>Find conacts by name</p>
+          <Input
+            type="text"
+            placeholder="Search contact"
+            value={filter}
+            onChange={onChangeImput}
+          ></Input>
+          <ContactList
+            contacts={filteredContacts}
+            onDeleteContact={onDeleteContact}
+          />
+        </Section>
+      )}
+    </Container>
+  );
 }

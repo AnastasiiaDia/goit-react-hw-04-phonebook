@@ -1,47 +1,56 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Button, FormEl, Input } from './FormElements.styled';
 
-export class Form extends Component {
-  state = { name: '', number: '' };
+export function Form({ onAddContact }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  onChangeInputValue = event => {
-    this.setState({ [event.target.name]: event.target.value });
+  const onChangeInputValue = event => {
+    switch (event.target.name) {
+      case 'name':
+        setName(event.target.value);
+        break;
+      case 'number':
+        setNumber(event.target.value);
+        break;
+      default:
+        break;
+    }
   };
 
-  onFormSubmit = event => {
+  const onFormSubmit = event => {
     event.preventDefault();
-    const addedContact = { name: this.state.name, number: this.state.number };
+    const addedContact = { name, number };
+    onAddContact(addedContact);
 
-    // reset form
-    this.props.onAddContact(addedContact);
-    this.setState({ name: '', number: '' });
+    setName('');
+    setNumber('');
   };
-  render() {
-    return (
-      <>
-        <h1>Phonebook</h1>
-        <FormEl onSubmit={this.onFormSubmit}>
-          <span>Name</span>
-          <Input
-            type="text"
-            name="name"
-            required
-            value={this.state.name}
-            onChange={this.onChangeInputValue}
-            placeholder="Diana Ivanova"
-          />
-          <span>Number</span>
-          <Input
-            type="tel"
-            name="number"
-            required
-            value={this.state.number}
-            onChange={this.onChangeInputValue}
-            placeholder="123-45-67"
-          />
-          <Button type="submit">Add contact</Button>
-        </FormEl>
-      </>
-    );
-  }
+
+  return (
+    <>
+      <h1>Phonebook</h1>
+      <FormEl onSubmit={onFormSubmit}>
+        <span>Name</span>
+        <Input
+          type="text"
+          name="name"
+          required
+          value={name}
+          onChange={onChangeInputValue}
+          placeholder="Diana Ivanova"
+        />
+        <span>Number</span>
+        <Input
+          type="tel"
+          name="number"
+          required
+          value={number}
+          onChange={onChangeInputValue}
+          placeholder="123-45-67"
+        />
+        <Button type="submit">Add contact</Button>
+      </FormEl>
+    </>
+  );
 }
