@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import { useState } from 'react';
 import { Button, FormEl, Input } from './FormElements.styled';
 
 export function Form({ onAddContact }) {

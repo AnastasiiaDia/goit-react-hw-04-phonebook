@@ -38,18 +38,9 @@ export function App() {
     };
   }, [contacts]);
 
-  // componentDidUpdate(_, prevState) {
-  //   if (prevState.contact !== contacts) {
-  //     localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-  //   }
-  // };
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
-
-  // componentWillUnmount() {
-  //   localStorage.removeItem('contacts');
-  // }
 
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
